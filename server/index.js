@@ -4,10 +4,9 @@ const app = express()
 const cors = require("cors")
 const pool = require("./db")
 
-require('dotenv').config(); // leer .env
+// require('dotenv').config(); // leer .env
+const { PORT } = require('./config')
 
-
-const PORT = process.env.SERVER_PORT
 
 //middleware
 app.use(cors())
