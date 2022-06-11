@@ -10,7 +10,6 @@ const pool = new Pool({ // conexión a elephantSQL
 	database: process.env.PG_DATABASE,
 	host: process.env.PG_HOST,
 	port: process.env.PG_PORT
-
 })
 
 module.exports = pool;
