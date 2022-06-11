@@ -18,7 +18,7 @@ const EditUser = ({user}) => {
 		}
 	}
 
-	const [nombres, setNombres, rut, setRut] = useState (user.rut, user.nombres, user.apellidos, user.email);
+	const [nombres, setNombres, id_usuario, setID] = useState (user.id_usuario, user.rut, user.nombres, user.apellidos, user.email);
 	return ( <Fragment>
 	<button
 	  type="button"
@@ -70,7 +70,7 @@ const EditUser = ({user}) => {
 			  type="button"
 			  className="btn btn-danger"
 			  data-bs-dismiss="modal"
-			  onClick={() => setRut(user.rut)}
+			  onClick={() => setID(user.id_usuario)}
 			>
 			  Close
 			</button>
