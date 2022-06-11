@@ -1,0 +1,16 @@
+<h3>Iniciar Sesión:</h3>
+<% if (messages.error) { %>
+	<%= messages.error %>
+<% } %>
+<form action="/login" method="POST">
+	<div>
+		<label for="email">Correo Electrónico</label>
+		<input type="email" id="email" name="email" placeholder="Correo..." required>
+	</div>
+	<div>
+		<label for="contrasena">Contraseña</label>
+		<input type="password" id="contrasena" name="contrasena" placeholder="Contraseña..." required>
+	</div>
+	<button type="submit">Iniciar Sesión</button>
+</form>
+<a href="/register">Registrarse</a>
