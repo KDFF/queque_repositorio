@@ -18,21 +18,21 @@ app.listen(5000, () => {
 // Validate JWT tokens:
 const authorization = async (req, res, next) => {
     try {
-        // 1. obtiene el token del header del request
+        // 1. Obtain the header token from request
         const jwToken = req.header("token")
 
-        // 2. si no hay token presente es un error
+        // 2. Return an error if there's no token
         if (!jwToken) {
             return res.status(403).json("No autorizado")
         }
 
-        // 3. valida el token y obtiene el payload, si falla tirará una excepción
+        // 3. Validate the token and get the payload
         const payload = jwt.verify(jwToken, JWT_SECRET)
 
-        // 4. rescatamos el payload y lo dejamos en req.user
+        // 4. Store the payload in req.user
         req.user = payload.user
 
-        // 5. continua la ejecución del pipeline
+        // 5. Continue with pipeline execution
         next()
     } catch (err) {
         console.error(err.message)
@@ -47,7 +47,7 @@ const jwt = require("jsonwebtoken")
 const jwtSecret = JWT_SECRET;
 
 const jwtGenerator = (userId) => {
-	// genera un token jwt para el usuario dado
+	// Generate a JWT token
 	if (userId) {
 		const payload = {
 			user: userId,
@@ -60,7 +60,7 @@ const jwtGenerator = (userId) => {
 // ENCRYPT PASSWORD
 
 const encrypt = async (contrasena) => {
-	//  Encriptar contrasena usando bCrypt
+	//  Encrypt password using bCrypt
 	const saltRounds = 10
 	const salt = await bcrypt.genSalt(saltRounds)
 	const bcryptPassword = await bcrypt.hash(contrasena, salt)
@@ -130,13 +130,12 @@ app.get("/clientes/:id", authorization, async (req, res) => {
 
 // Create a user:
 
-// registrar usuario
 app.post("/registrar_usuario", async (req, res) => {
 	try {
-		// 1. destructurar req.body para obtener datos requeridos
+		// 1. Get required info from req.body
 		const { nombres, apellidos, email, contrasena, contrasena2, rut } = req.body
 
-		// 2. verificar si el usuario existe (si existe lanzar un error, con throw)
+		// 2. Check if the user already exists
 		const user = await pool.query(
 			"SELECT * FROM cakestore.Logins WHERE email = $1 OR rut = $2",
 			[email, rut]
@@ -146,7 +145,7 @@ app.post("/registrar_usuario", async (req, res) => {
 			return res.status(401).send("Usuario ya existe")
 		};
 
-		// 3. verificar contraseña válida
+		// 3. Verify if the password is valid
 		if (contrasena != contrasena2) {
             return res.status(401).json("Contraseñas no coinciden")
         }
@@ -155,10 +154,10 @@ app.post("/registrar_usuario", async (req, res) => {
             return res.status(401).json("La contraseña debe tener al menos 12 dígitos")
         }
 
-		// 4. Encriptar contrasena usando bCrypt
+		// 4. Encrypt password using bCrypt
 		bcryptPassword = await encrypt(contrasena)
 
-		// 5. agregar el usuario a la base de datos
+		// 5. Add the new user to the database
 		const timeElapsed = Date.now();
 		const today = new Date(timeElapsed);
  		today.toLocaleDateString();
@@ -195,10 +194,10 @@ app.post("/registrar_cliente", async (req, res) => {
 
 app.post("/iniciar_sesion", async (req, res) => {
     try {
-        // 1. destructurizar req.body
+        // 1. Destructure req.body
         const { email, contrasena } = req.body
 
-        // 2. verificar si el usuario no existe (si no emitiremos un error)
+        // 2. Check if the user exists
         const user = await pool.query(
 			"SELECT * FROM cakestore.Logins WHERE email = $1",
 			[email]
@@ -208,14 +207,14 @@ app.post("/iniciar_sesion", async (req, res) => {
             return res.status(401).json("Password incorrecta o email no existe")
         }
 
-        // 3. verificar si la clave es la misma que está almacenada en la base de datos
+        // 3. Password check
         const validPassword = await compare(contrasena, user.rows[0].contrasena)
         console.log("plain", contrasena, user.rows[0].contrasena)
         if (!validPassword) {
             return res.status(401).json("Password incorrecta o email no existe")
         }
 
-        // 4. entregar un token jwt 
+        // 4. Return a JWT token 
         const token = jwtGenerator(user.rows[0].rut)
         res.json({ token })
     } catch (err) {
